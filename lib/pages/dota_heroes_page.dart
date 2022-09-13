@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dota_hero/models/dota_hero.dart';
+import 'package:flutter_dota_hero/models/dota_hero_attribute.dart';
+import 'package:flutter_dota_hero/pages/hero_detail_page.dart';
 import 'package:http/http.dart' as http;
 
 List<DotaHero> parseHeroes(String responseBody) {
@@ -24,6 +26,7 @@ class DotaHeroesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('HEROES'),
+        backgroundColor: Colors.grey.shade900,
       ),
       body: FutureBuilder<List<DotaHero>>(
         future: fetchHeroes(http.Client()),
@@ -61,7 +64,7 @@ class _DotaHeroesList extends State<DotaHeroesList> {
   final List<DotaHero> dotaHeroes;
 
   List<DotaHero> _dataSource = [];
-  String? _primaryAttr;
+  DotaHeroAttribute? _primaryAttr;
 
   _DotaHeroesList(this.dotaHeroes);
 
@@ -73,35 +76,41 @@ class _DotaHeroesList extends State<DotaHeroesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 64,
-          child: DotaHeroesHeader(_primaryAttr, _filterPrimaryAttr),
-        ),
-        Flexible(
-          child: DotaHeroesGridView(_dataSource),
-        ),
-      ],
+    return Container(
+      color: Colors.grey.shade800,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 64,
+            child: DotaHeroesHeader(_primaryAttr, _filterPrimaryAttr),
+          ),
+          Flexible(
+            child: DotaHeroesGridView(_dataSource),
+          ),
+        ],
+      ),
     );
   }
 
-  void _filterPrimaryAttr(String? attr) {
+  void _filterPrimaryAttr(DotaHeroAttribute? attr) {
     List<DotaHero> newDataSource = [];
-    String? newPrimaryAttr = (_primaryAttr == attr) ? null : attr;
+    DotaHeroAttribute? newPrimaryAttr = (_primaryAttr == attr) ? null : attr;
 
     switch (newPrimaryAttr) {
-      case 'str':
-        newDataSource =
-            dotaHeroes.where((e) => e.primaryAttr == 'str').toList();
+      case DotaHeroAttribute.str:
+        newDataSource = dotaHeroes
+            .where((e) => e.primaryAttr == DotaHeroAttribute.str)
+            .toList();
         break;
-      case 'agi':
-        newDataSource =
-            dotaHeroes.where((e) => e.primaryAttr == 'agi').toList();
+      case DotaHeroAttribute.agi:
+        newDataSource = dotaHeroes
+            .where((e) => e.primaryAttr == DotaHeroAttribute.agi)
+            .toList();
         break;
-      case 'int':
-        newDataSource =
-            dotaHeroes.where((e) => e.primaryAttr == 'int').toList();
+      case DotaHeroAttribute.int:
+        newDataSource = dotaHeroes
+            .where((e) => e.primaryAttr == DotaHeroAttribute.int)
+            .toList();
         break;
       default:
         newDataSource = dotaHeroes;
@@ -116,7 +125,7 @@ class _DotaHeroesList extends State<DotaHeroesList> {
 }
 
 class DotaHeroesHeader extends StatelessWidget {
-  final String? primaryAttr;
+  final DotaHeroAttribute? primaryAttr;
   final Function filterPrimaryAttr;
   final keywordController = TextEditingController();
 
@@ -132,48 +141,42 @@ class DotaHeroesHeader extends StatelessWidget {
             size: const Size(40, 40),
             child: TextButton(
               onPressed: () {
-                filterPrimaryAttr('str');
+                filterPrimaryAttr(DotaHeroAttribute.str);
               },
               style: TextButton.styleFrom(
-                backgroundColor:
-                    primaryAttr == 'str' ? Colors.red.shade100 : null,
+                backgroundColor: primaryAttr == DotaHeroAttribute.str
+                    ? Colors.red.shade100
+                    : null,
               ),
-              child: const Icon(
-                Icons.circle,
-                color: Colors.red,
-              ),
+              child: DotaHeroAttribute.str.attrIcon(24),
             ),
           ),
           SizedBox.fromSize(
             size: const Size(40, 40),
             child: TextButton(
               onPressed: () {
-                filterPrimaryAttr('agi');
+                filterPrimaryAttr(DotaHeroAttribute.agi);
               },
               style: TextButton.styleFrom(
-                backgroundColor:
-                    primaryAttr == 'agi' ? Colors.green.shade100 : null,
+                backgroundColor: primaryAttr == DotaHeroAttribute.agi
+                    ? Colors.green.shade100
+                    : null,
               ),
-              child: const Icon(
-                Icons.circle,
-                color: Colors.green,
-              ),
+              child: DotaHeroAttribute.agi.attrIcon(24),
             ),
           ),
           SizedBox.fromSize(
             size: const Size(40, 40),
             child: TextButton(
               onPressed: () {
-                filterPrimaryAttr('int');
+                filterPrimaryAttr(DotaHeroAttribute.int);
               },
               style: TextButton.styleFrom(
-                backgroundColor:
-                    primaryAttr == 'int' ? Colors.blue.shade100 : null,
+                backgroundColor: primaryAttr == DotaHeroAttribute.int
+                    ? Colors.blue.shade100
+                    : null,
               ),
-              child: const Icon(
-                Icons.circle,
-                color: Colors.blue,
-              ),
+              child: DotaHeroAttribute.int.attrIcon(24),
             ),
           ),
           Flexible(
@@ -206,7 +209,18 @@ class DotaHeroesGridView extends StatelessWidget {
       itemCount: dataSource.length,
       itemBuilder: (context, index) {
         Size size = MediaQuery.of(context).size;
-        return _heroGridTile(dataSource[index], size.width);
+        DotaHero hero = dataSource[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HeroDetailPage(hero: hero),
+              ),
+            );
+          },
+          child: _heroGridTile(hero, size.width),
+        );
       },
     );
   }
@@ -229,9 +243,9 @@ class DotaHeroesGridView extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.circle,
-                    color: hero.attrColor(),
+                  hero.primaryAttrIcon(24),
+                  const SizedBox(
+                    width: 8,
                   ),
                   Text(
                     hero.localizedName ?? '',
