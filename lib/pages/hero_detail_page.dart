@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dota_hero/models/dota_hero.dart';
 import 'package:flutter_dota_hero/models/dota_hero_attribute.dart';
+import 'package:flutter_dota_hero/models/dota_hero_role.dart';
 import 'package:flutter_dota_hero/models/dota_hero_stat.dart';
+import 'package:flutter_dota_hero/extensions/string_extension.dart';
 
 class HeroDetailPage extends StatelessWidget {
   const HeroDetailPage({
@@ -33,7 +35,7 @@ class HeroDetailPage extends StatelessWidget {
 
   Widget _attributes() {
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         children: [
           Text(
@@ -44,13 +46,13 @@ class HeroDetailPage extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Container(
+          const SizedBox(
             height: 16,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: 160,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -89,8 +91,8 @@ class HeroDetailPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                width: 20,
+              const SizedBox(
+                width: 24,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -151,16 +153,90 @@ class HeroDetailPage extends StatelessWidget {
   }
 
   Widget _roles() {
+    List<DotaHeroRole> heroRoles = [];
     return Padding(
-      padding: EdgeInsets.all(32),
-      child: Row(),
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          Text(
+            'ROLES'.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white60,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Container(
+            height: 16,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _roleItem(DotaHeroRole.carry, heroRoles),
+                  _roleItem(DotaHeroRole.disabler, heroRoles),
+                  _roleItem(DotaHeroRole.escape, heroRoles),
+                ],
+              ),
+              const SizedBox(
+                width: 24,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _roleItem(DotaHeroRole.support, heroRoles),
+                  _roleItem(DotaHeroRole.jungler, heroRoles),
+                  _roleItem(DotaHeroRole.pusher, heroRoles),
+                ],
+              ),
+              const SizedBox(
+                width: 24,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _roleItem(DotaHeroRole.nuker, heroRoles),
+                  _roleItem(DotaHeroRole.durable, heroRoles),
+                  _roleItem(DotaHeroRole.initiator, heroRoles),
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _roleItem(DotaHeroRole item, List<DotaHeroRole> roles) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.circle,
+            color: roles.contains(item) ? Colors.white : Colors.grey.shade800,
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          Text(
+            item.name.capitalize(),
+            style: TextStyle(
+                color: roles.contains(item) ? Colors.white : Colors.white60,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _stats() {
-    double iconHeight = 20;
     return Padding(
-      padding: EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
           Text(
