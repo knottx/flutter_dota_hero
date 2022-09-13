@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dota_hero/models/dota_hero.dart';
 import 'package:flutter_dota_hero/models/dota_hero_attribute.dart';
+import 'package:flutter_dota_hero/models/dota_hero_stat.dart';
 
 class HeroDetailPage extends StatelessWidget {
   const HeroDetailPage({
@@ -65,6 +66,11 @@ class HeroDetailPage extends StatelessWidget {
                       height: 20,
                       child: Text(
                         '${hero.health().toStringAsFixed(0)}    + ${hero.healthRegen().toStringAsFixed(1)}',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Container(
@@ -73,6 +79,11 @@ class HeroDetailPage extends StatelessWidget {
                       height: 20,
                       child: Text(
                         '${hero.mana().toStringAsFixed(0)}    + ${hero.manaRegen().toStringAsFixed(1)}',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -85,87 +96,54 @@ class HeroDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      DotaHeroAttribute.str.attrIcon(24),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        hero.baseStr.toStringAsFixed(0),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        '  + ${hero.strGain}',
-                        style: const TextStyle(
-                          color: Colors.white60,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
+                  _attributeItem(
+                    DotaHeroAttribute.str,
+                    hero.baseStr,
+                    hero.strGain,
                   ),
-                  const SizedBox(
-                    height: 8,
+                  _attributeItem(
+                    DotaHeroAttribute.agi,
+                    hero.baseAgi,
+                    hero.agiGain,
                   ),
-                  Row(
-                    children: [
-                      DotaHeroAttribute.agi.attrIcon(24),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        hero.baseAgi.toStringAsFixed(0),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        '  + ${hero.agiGain}',
-                        style: const TextStyle(
-                          color: Colors.white60,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      DotaHeroAttribute.int.attrIcon(24),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        hero.baseInt.toStringAsFixed(0),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        '  + ${hero.intGain}',
-                        style: const TextStyle(
-                          color: Colors.white60,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
+                  _attributeItem(
+                    DotaHeroAttribute.int,
+                    hero.baseInt,
+                    hero.intGain,
                   ),
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _attributeItem(DotaHeroAttribute attr, double base, double gain) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          attr.attrIcon(24),
+          const SizedBox(
+            width: 8,
+          ),
+          Text(
+            base.toStringAsFixed(0),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            '  + ${gain.toStringAsFixed(1)}',
+            style: const TextStyle(
+              color: Colors.white60,
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+            ),
           ),
         ],
       ),
@@ -200,134 +178,53 @@ class HeroDetailPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Attack'.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+              _statSection(
+                DotaHeroStat.attack,
+                [
+                  _statItem(
+                    DotaHeroStatItem.damage,
+                    '${hero.attackMin().toStringAsFixed(0)}-${hero.attackMax().toStringAsFixed(0)}',
                   ),
-                  const SizedBox(
-                    height: 8,
+                  _statItem(
+                    DotaHeroStatItem.attackRate,
+                    hero.attackRate.toStringAsFixed(1),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_damage.png',
-                          height: iconHeight,
-                        ),
-                        '${hero.attackMin().toStringAsFixed(0)}-${hero.attackMax().toStringAsFixed(0)}',
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_attack_time.png',
-                          height: iconHeight,
-                        ),
-                        hero.attackRate.toStringAsFixed(1),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_attack_range.png',
-                          height: iconHeight,
-                        ),
-                        hero.attackRange.toStringAsFixed(0),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_projectile_speed.png',
-                          height: iconHeight,
-                        ),
-                        hero.projectileSpeed.toStringAsFixed(0),
-                      ),
-                    ],
+                  _statItem(
+                    DotaHeroStatItem.attackRange,
+                    hero.attackRange.toStringAsFixed(0),
+                  ),
+                  _statItem(
+                    DotaHeroStatItem.projectileSpeed,
+                    hero.projectileSpeed.toStringAsFixed(0),
                   ),
                 ],
               ),
               const SizedBox(
                 width: 24,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Defense'.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+              _statSection(
+                DotaHeroStat.defense,
+                [
+                  _statItem(
+                    DotaHeroStatItem.armor,
+                    hero.armor().toStringAsFixed(1),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_armor.png',
-                          height: iconHeight,
-                        ),
-                        hero.armor().toStringAsFixed(1),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_magic_resist.png',
-                          height: iconHeight,
-                        ),
-                        '${hero.baseMr.toStringAsFixed(0)}%',
-                      )
-                    ],
-                  ),
+                  _statItem(
+                    DotaHeroStatItem.magicResistant,
+                    '${hero.baseMr.toStringAsFixed(0)}%',
+                  )
                 ],
               ),
               const SizedBox(
                 width: 24,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Mobility'.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _statItem(
-                        Image.asset(
-                          'assets/images/icons/icon_movement_speed.png',
-                          height: iconHeight,
-                        ),
-                        hero.moveSpeed.toStringAsFixed(0),
-                      )
-                    ],
-                  ),
+              _statSection(
+                DotaHeroStat.mobility,
+                [
+                  _statItem(
+                    DotaHeroStatItem.movementSpeed,
+                    hero.moveSpeed.toStringAsFixed(0),
+                  )
                 ],
               ),
             ],
@@ -337,22 +234,48 @@ class HeroDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _statItem(Image image, String value) {
-    return Row(
+  Widget _statSection(DotaHeroStat section, List<Widget> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        image,
-        const SizedBox(
-          width: 8,
-        ),
         Text(
-          value,
+          section.name.toUpperCase(),
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.white60,
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(
+          height: 8,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: items,
+        ),
       ],
+    );
+  }
+
+  Widget _statItem(DotaHeroStatItem item, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          item.imageIcon(20),
+          const SizedBox(
+            width: 8,
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
