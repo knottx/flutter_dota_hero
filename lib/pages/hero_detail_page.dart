@@ -17,18 +17,16 @@ class HeroDetailPage extends StatelessWidget {
         title: Text(hero.localizedName ?? ''),
         backgroundColor: Colors.grey.shade900,
       ),
-      body: Container(
-        color: Colors.grey.shade800,
-        child: Center(
-          child: Column(
-            children: [
-              _attributes(),
-              _roles(),
-              _stats(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _attributes(),
+            _roles(),
+            _stats(),
+          ],
         ),
       ),
+      backgroundColor: Colors.grey.shade800,
     );
   }
 
@@ -94,9 +92,19 @@ class HeroDetailPage extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                        '${hero.baseStr.toStringAsFixed(0)} + ${hero.strGain}',
+                        hero.baseStr.toStringAsFixed(0),
                         style: const TextStyle(
                           color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '  + ${hero.strGain}',
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
@@ -111,7 +119,21 @@ class HeroDetailPage extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                          '${hero.baseAgi.toStringAsFixed(0)} + ${hero.agiGain}'),
+                        hero.baseAgi.toStringAsFixed(0),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '  + ${hero.agiGain}',
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -124,7 +146,21 @@ class HeroDetailPage extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                          '${hero.baseInt.toStringAsFixed(0)} + ${hero.intGain}'),
+                        hero.baseInt.toStringAsFixed(0),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '  + ${hero.intGain}',
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -137,7 +173,10 @@ class HeroDetailPage extends StatelessWidget {
   }
 
   Widget _roles() {
-    return Container();
+    return Padding(
+      padding: EdgeInsets.all(32),
+      child: Row(),
+    );
   }
 
   Widget _stats() {

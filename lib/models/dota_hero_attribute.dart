@@ -7,11 +7,6 @@ enum DotaHeroAttribute {
 }
 
 extension DotaHeroAttributeExtension on DotaHeroAttribute {
-  static DotaHeroAttribute? fromString(String? value) {
-    return DotaHeroAttribute.values
-        .firstWhere((element) => element.name == value);
-  }
-
   Widget attrIcon(double height) {
     return Container(
       height: height,

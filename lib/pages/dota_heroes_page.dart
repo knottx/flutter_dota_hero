@@ -44,6 +44,7 @@ class DotaHeroesPage extends StatelessWidget {
           }
         },
       ),
+      backgroundColor: Colors.grey.shade800,
     );
   }
 }
@@ -76,19 +77,16 @@ class _DotaHeroesList extends State<DotaHeroesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade800,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 64,
-            child: DotaHeroesHeader(_primaryAttr, _filterPrimaryAttr),
-          ),
-          Flexible(
-            child: DotaHeroesGridView(_dataSource),
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        SizedBox(
+          height: 64,
+          child: DotaHeroesHeader(_primaryAttr, _filterPrimaryAttr),
+        ),
+        Flexible(
+          child: DotaHeroesGridView(_dataSource),
+        ),
+      ],
     );
   }
 
