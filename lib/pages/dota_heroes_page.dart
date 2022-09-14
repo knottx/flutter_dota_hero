@@ -66,6 +66,7 @@ class _DotaHeroesList extends State<DotaHeroesList> {
 
   List<DotaHero> _dataSource = [];
   DotaHeroAttribute? _primaryAttr;
+  String? _keyword;
 
   _DotaHeroesList(this.dotaHeroes);
 
@@ -81,7 +82,8 @@ class _DotaHeroesList extends State<DotaHeroesList> {
       children: [
         SizedBox(
           height: 64,
-          child: DotaHeroesHeader(_primaryAttr, _filterPrimaryAttr),
+          child: DotaHeroesHeader(
+              _primaryAttr, _filterPrimaryAttr, _filterKeyword),
         ),
         Flexible(
           child: DotaHeroesGridView(_dataSource),
@@ -90,33 +92,51 @@ class _DotaHeroesList extends State<DotaHeroesList> {
     );
   }
 
-  void _filterPrimaryAttr(DotaHeroAttribute? attr) {
-    List<DotaHero> newDataSource = [];
-    DotaHeroAttribute? newPrimaryAttr = (_primaryAttr == attr) ? null : attr;
+  void _filterKeyword(String? keyword) {
+    _keyword = keyword;
+    _filterDataSource(_primaryAttr, _keyword ?? '');
+  }
 
-    switch (newPrimaryAttr) {
+  void _filterPrimaryAttr(DotaHeroAttribute? attr) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    DotaHeroAttribute? newPrimaryAttr = (_primaryAttr == attr) ? null : attr;
+    _filterDataSource(newPrimaryAttr, _keyword ?? '');
+  }
+
+  void _filterDataSource(DotaHeroAttribute? attr, String keyword) {
+    List<DotaHero> newDataSource = [];
+    switch (attr) {
       case DotaHeroAttribute.str:
         newDataSource = dotaHeroes
             .where((e) => e.primaryAttr == DotaHeroAttribute.str)
+            .where(
+                (e) => (e.localizedName?.toLowerCase() ?? '').contains(keyword))
             .toList();
         break;
       case DotaHeroAttribute.agi:
         newDataSource = dotaHeroes
             .where((e) => e.primaryAttr == DotaHeroAttribute.agi)
+            .where(
+                (e) => (e.localizedName?.toLowerCase() ?? '').contains(keyword))
             .toList();
         break;
       case DotaHeroAttribute.int:
         newDataSource = dotaHeroes
             .where((e) => e.primaryAttr == DotaHeroAttribute.int)
+            .where(
+                (e) => (e.localizedName?.toLowerCase() ?? '').contains(keyword))
             .toList();
         break;
       default:
-        newDataSource = dotaHeroes;
+        newDataSource = dotaHeroes
+            .where(
+                (e) => (e.localizedName?.toLowerCase() ?? '').contains(keyword))
+            .toList();
         break;
     }
 
     setState(() {
-      _primaryAttr = newPrimaryAttr;
+      _primaryAttr = attr;
       _dataSource = newDataSource;
     });
   }
@@ -125,9 +145,13 @@ class _DotaHeroesList extends State<DotaHeroesList> {
 class DotaHeroesHeader extends StatelessWidget {
   final DotaHeroAttribute? primaryAttr;
   final Function filterPrimaryAttr;
-  final keywordController = TextEditingController();
+  final Function filterKeyword;
 
-  DotaHeroesHeader(this.primaryAttr, this.filterPrimaryAttr);
+  const DotaHeroesHeader(
+    this.primaryAttr,
+    this.filterPrimaryAttr,
+    this.filterKeyword,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +206,9 @@ class DotaHeroesHeader extends StatelessWidget {
               padding: const EdgeInsets.all(4.0),
               child: TextField(
                 decoration: const InputDecoration(labelText: 'Search'),
-                controller: keywordController,
+                onChanged: (value) {
+                  filterKeyword(value);
+                },
               ),
             ),
           )
@@ -200,6 +226,7 @@ class DotaHeroesGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 16 / 9,
@@ -210,6 +237,7 @@ class DotaHeroesGridView extends StatelessWidget {
         DotaHero hero = dataSource[index];
         return GestureDetector(
           onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
             Navigator.push(
               context,
               MaterialPageRoute(
