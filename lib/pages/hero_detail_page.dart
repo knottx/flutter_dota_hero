@@ -4,8 +4,9 @@ import 'package:flutter_dota_hero/models/dota_hero_attribute.dart';
 import 'package:flutter_dota_hero/models/dota_hero_role.dart';
 import 'package:flutter_dota_hero/models/dota_hero_stat.dart';
 import 'package:flutter_dota_hero/extensions/string_extension.dart';
+import 'package:flutter_dota_hero/managers/session_manager.dart';
 
-class HeroDetailPage extends StatelessWidget {
+class HeroDetailPage extends StatefulWidget {
   const HeroDetailPage({
     super.key,
     required this.hero,
@@ -14,11 +15,35 @@ class HeroDetailPage extends StatelessWidget {
   final DotaHero hero;
 
   @override
+  State<HeroDetailPage> createState() => _HeroDetailPage(hero);
+}
+
+class _HeroDetailPage extends State<HeroDetailPage> {
+  final DotaHero hero;
+
+  _HeroDetailPage(this.hero);
+
+  bool get _alreadySaved {
+    return SessionManager().favoritesHeroes.contains(hero);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(hero.localizedName ?? ''),
         backgroundColor: Colors.grey.shade900,
+        actions: [
+          IconButton(
+            icon: Icon(
+              _alreadySaved ? Icons.favorite : Icons.favorite_border,
+              color: _alreadySaved ? Colors.red : null,
+              semanticLabel: _alreadySaved ? 'Remove from saved' : 'Save',
+            ),
+            onPressed: _favorite,
+            tooltip: 'Favorite',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -31,6 +56,15 @@ class HeroDetailPage extends StatelessWidget {
       ),
       backgroundColor: Colors.grey.shade800,
     );
+  }
+
+  void _favorite() {
+    if (_alreadySaved) {
+      SessionManager().favoritesHeroes.removeWhere((e) => e.id == hero.id);
+    } else {
+      SessionManager().favoritesHeroes.add(hero);
+    }
+    setState(() {});
   }
 
   Widget _attributes() {
@@ -153,7 +187,6 @@ class HeroDetailPage extends StatelessWidget {
   }
 
   Widget _roles() {
-    List<DotaHeroRole> heroRoles = [];
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -176,9 +209,9 @@ class HeroDetailPage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _roleItem(DotaHeroRole.carry, heroRoles),
-                  _roleItem(DotaHeroRole.disabler, heroRoles),
-                  _roleItem(DotaHeroRole.escape, heroRoles),
+                  _roleItem(DotaHeroRole.carry),
+                  _roleItem(DotaHeroRole.disabler),
+                  _roleItem(DotaHeroRole.escape),
                 ],
               ),
               const SizedBox(
@@ -187,9 +220,9 @@ class HeroDetailPage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _roleItem(DotaHeroRole.support, heroRoles),
-                  _roleItem(DotaHeroRole.jungler, heroRoles),
-                  _roleItem(DotaHeroRole.pusher, heroRoles),
+                  _roleItem(DotaHeroRole.support),
+                  _roleItem(DotaHeroRole.jungler),
+                  _roleItem(DotaHeroRole.pusher),
                 ],
               ),
               const SizedBox(
@@ -198,9 +231,9 @@ class HeroDetailPage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _roleItem(DotaHeroRole.nuker, heroRoles),
-                  _roleItem(DotaHeroRole.durable, heroRoles),
-                  _roleItem(DotaHeroRole.initiator, heroRoles),
+                  _roleItem(DotaHeroRole.nuker),
+                  _roleItem(DotaHeroRole.durable),
+                  _roleItem(DotaHeroRole.initiator),
                 ],
               ),
             ],
@@ -210,14 +243,15 @@ class HeroDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _roleItem(DotaHeroRole item, List<DotaHeroRole> roles) {
+  Widget _roleItem(DotaHeroRole item) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Icon(
             Icons.circle,
-            color: roles.contains(item) ? Colors.white : Colors.grey.shade800,
+            color:
+                hero.roles.contains(item) ? Colors.white : Colors.grey.shade800,
           ),
           const SizedBox(
             width: 8,
@@ -225,7 +259,8 @@ class HeroDetailPage extends StatelessWidget {
           Text(
             item.name.capitalize(),
             style: TextStyle(
-                color: roles.contains(item) ? Colors.white : Colors.white60,
+                color:
+                    hero.roles.contains(item) ? Colors.white : Colors.white60,
                 fontSize: 16,
                 fontWeight: FontWeight.w600),
           ),

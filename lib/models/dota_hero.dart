@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dota_hero/models/dota_hero_attribute.dart';
+import 'package:flutter_dota_hero/models/dota_hero_role.dart';
 
 class DotaHero {
   final int id;
@@ -7,7 +10,7 @@ class DotaHero {
   final String? localizedName;
   final DotaHeroAttribute? primaryAttr;
   final String? attackType;
-  // final List<String>? roles;
+  final List<DotaHeroRole> roles;
   final String? img;
   final double baseHealth;
   final double baseHealthRegen;
@@ -34,7 +37,7 @@ class DotaHero {
     required this.localizedName,
     required this.primaryAttr,
     required this.attackType,
-    // required this.roles,
+    required this.roles,
     required this.img,
     required this.baseHealth,
     required this.baseHealthRegen,
@@ -115,6 +118,15 @@ class DotaHero {
   }
 
   factory DotaHero.fromJson(Map<String, dynamic> json) {
+    List<String> r = List.from(json['roles']);
+    List<DotaHeroRole> roles = [];
+    r.forEach((element) {
+      DotaHeroRole role = DotaHeroRole.values
+          .firstWhere((e) => e.name == element.toLowerCase());
+      if (role != null) {
+        roles.add(role);
+      }
+    });
     return DotaHero(
       id: json['id'] as int,
       name: json['name'].toString(),
@@ -122,6 +134,7 @@ class DotaHero {
       primaryAttr: DotaHeroAttribute.values.firstWhere(
           (element) => element.name == json['primary_attr'].toString()),
       attackType: json['attack_type'].toString(),
+      roles: roles,
       img: json['img'].toString(),
       baseHealth: double.parse(json['base_health'].toString()),
       baseHealthRegen: double.parse(json['base_health_regen'].toString()),
